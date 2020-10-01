@@ -1,2 +1,2 @@
 # CPDS
-Si Pier, cosas nazis
+Si Piter, cosas nazis

@@ -1,0 +1,52 @@
+/* Homework: LTS & FSP
+*
+*
+*
+* Name: Carlos
+* Surname: Bayona
+*
+* Name: Andrea
+* Surname: Querol
+*
+*/
+
+/* museum */
+
+const N = 5
+EAST = ( arrive -> EAST ).
+WEST = ( leave  -> WEST ).
+DIRECTOR = ( open -> close -> DIRECTOR ).
+
+CONTROL = CLOSED[0],
+CLOSED[i:0..N] = (
+	when (i == 0) open -> OPENED[0]
+	| when (i > 0) leave -> CLOSED[i - 1]
+	),
+OPENED[i:0..N] = ( close -> CLOSED[i]
+	| when(i < N) arrive -> OPENED[i + 1]
+	| when(i > 0) leave -> OPENED[i - 1]
+	).
+
+||MUSEUM = ( EAST || WEST || DIRECTOR || CONTROL ).
+
+/* Time-Out Client server */
+
+/* a */
+
+||CLIENT_SERVER = ( CLIENT || SERVER ) /{ call/request, answer/reply }.
+
+/* b */
+
+When there is a timeout, the server still tries to provide a service. When this service is done, the server can not provide the answer since the client is not waiting for it. Because of that, we have a deadlock.
+
+/* c */
+
+CLIENT = ( call -> WAIT ),
+WAIT = ( answer -> continue -> CLIENT | timeout -> CLIENT ).
+
+SERVER = ( request -> PROCES ),
+PROCES = ( service -> reply -> SERVER | cancelled -> SERVER ).
+
+||CLIENT_SERVER = ( CLIENT || SERVER ) /{ call/request, answer/reply, timeout/cancelled }. 
+
+/* end homework */

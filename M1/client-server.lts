@@ -1,3 +1,0 @@
-CLIENT = ( call -> WAIT ).
-WAIT = ( answer -> continue -> CLIENT | timeout -> CLIENT ).
-SERVER = ( request -> service -> reply -> SERVER ).

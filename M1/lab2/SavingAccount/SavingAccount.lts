@@ -1,0 +1,14 @@
+const N = 10
+
+PERSON = (
+        deposit[0..N] -> PERSON
+        | withdraw[0..N] -> PERSON
+).
+
+ACCOUNT = ACCOUNT[0],
+ACCOUNT[balance: 0..N] = (
+        deposit[amount: 0..N] -> ACCOUNT[(balance + amount) % N] // % N is because we have a maximum ammount of money in the account fixed to N
+        | when(balance > 0) withdraw[amount: 0..balance] -> ACCOUNT[balance - amount]
+).
+
+||SAVING_ACCOUNT = (a:PERSON || b:PERSON || { a, b }::ACCOUNT).

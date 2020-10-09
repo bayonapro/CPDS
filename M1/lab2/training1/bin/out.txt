@@ -1,0 +1,17 @@
+alice is hungry and would like to eat
+cook would like to fill the pot
+bob is hungry and would like to eat
+cook fills the pot
+servings in the pot: 5
+cook would like to fill the pot
+bob is served
+servings in the pot: 4
+bob is hungry and would like to eat
+alice is served
+servings in the pot: 3
+alice is hungry and would like to eat
+alice is served
+servings in the pot: 2
+cook has to wait
+alice is hungry and would like to eat
+bob is served

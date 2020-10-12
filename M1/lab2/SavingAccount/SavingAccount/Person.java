@@ -2,13 +2,11 @@ import java.util.Random;
 
 public class Person extends Thread {
 	Account account;
-	int max_movement;
 
 	Random random = new Random();
 
-	public Person(Account account, int max_movement) {
+	public Person(Account account) {
 		this.account = account;
-		this.max_movement = max_movement;
 	}
 
 	public void run() {

@@ -1,9 +1,0 @@
-The main difference between the original implementation (Banket) and the BanketNoWait is how threads get the information of the amount of servings in the pot.
-
-The threads if the original implementation (Banket), do a pasive waiting whenever the pot is empty and get notifiend once the cook refills the pot.
-
-In the other hand, the second implementation (BadBanketTwo/BanketNoWait) the threads do an active waiting since they check if there's food in the pot every iteration of the while loop, in this case, every 200ms.
-
-In order to repair the inconsistencies of the BadBanketTwo implementation, converting the two actions of BadPotTwo to "syncronized". Without syncronization, different threads try to access same resources and make modifications whichs leads to inconsistencies, such as negative amount of servings, as we can see both in example 2 and 3.
-
-About choosing which implementation is better, the original implementation (Banket) is better because of the pasive waiting. The approach of BanketNoWait is not very resource-friendly since is constantly checking either there is food in the pot or not.

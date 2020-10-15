@@ -1,24 +1,23 @@
 import java.util.Random;
 
-public class Company extends Thread {
+public class Person extends Thread {
 	Account account;
-	int max_movement;
+
 	Random random = new Random();
 
-	public Company(Account account, int max_movement) {
+	public Person(Account account) {
 		this.account = account;
-		this.max_movement = max_movement;
 	}
 
 	public void run() {
 		String name = Thread.currentThread().getName();
 		while(true) {
-			int amount = random.nextInt(2);
+			int amount = random.nextInt(100); // 100 is an arbitrary number 
 			if (random.nextBoolean()) {
 				System.out.println(name + " would like to deposit");
 				try {
 					Thread.sleep(200);
-					account.deposit(max_movement);
+					account.deposit(amount);
 				} catch (InterruptedException e) {}
 			} else {
 				System.out.println(name + " would like to withdraw");

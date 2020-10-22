@@ -1,0 +1,23 @@
+//general case. Change value of RMAX as you want
+
+const False = 0
+const True = 1
+
+const RMAX = 3
+const FMAX = 4
+
+range Bool = False..True
+range R = 1..RMAX
+range F = 1..FMAX
+
+FLIGHT = (request.runway -> WAIT),
+WAIT = (free.runway[i:R] -> take.off.done[i] -> FLIGHT).
+
+CONTROL_RUNWAY = CONTROL[True],
+CONTROL[free:Bool] = (when(free) free.runway -> CONTROL[False]
+                     |take.off.done -> CONTROL[True]
+                     ).
+
+||CONTROL = (c[R]: CONTROL_RUNWAY).
+
+||AIRPORT = (f[F]:FLIGHT || f[F]::CONTROL)/{f[k:F].free.runway[i:R]/f[k].c[i].free.runway, f[k:F].take.off.done[i:R]/f[k].c[i].take.off.done}.

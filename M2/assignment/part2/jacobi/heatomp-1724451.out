@@ -1,0 +1,48 @@
+Iterations        : 25000
+Resolution        : 1024
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 72.347 (288.358 GFlop => 3985.80 MFlop/s)
+Convergence to residual=0.000129: 25000 iterations
+Iterations        : 25000
+Resolution        : 1024
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 57.901 (288.358 GFlop => 4980.23 MFlop/s)
+Convergence to residual=0.000129: 25000 iterations
+Iterations        : 25000
+Resolution        : 1024
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 58.021 (288.358 GFlop => 4969.86 MFlop/s)
+Convergence to residual=0.000129: 25000 iterations
+Iterations        : 25000
+Resolution        : 1024
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 54.737 (288.358 GFlop => 5268.07 MFlop/s)
+Convergence to residual=0.000129: 25000 iterations
+Iterations        : 25000
+Resolution        : 1024
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 57.769 (288.358 GFlop => 4991.60 MFlop/s)
+Convergence to residual=0.000129: 25000 iterations
+Iterations        : 25000
+Resolution        : 1024
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 60.273 (288.358 GFlop => 4784.24 MFlop/s)
+Convergence to residual=0.000129: 25000 iterations

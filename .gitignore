@@ -3,3 +3,5 @@ ltsatool.zip
 
 *.class
 .*.swp
+*.err
+*.out

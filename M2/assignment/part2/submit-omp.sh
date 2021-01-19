@@ -8,8 +8,9 @@
 #SBATCH --partition=debug          # Partition to run the job
 
 executable=heatomp
-n_threads=2
-MAX_THREADS=12
+n_threads=8
+MAX_THREADS=8
+#12
 while (test $n_threads -le $MAX_THREADS)
   do
 	export OMP_NUM_THREADS=$n_threads

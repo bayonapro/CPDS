@@ -8,6 +8,7 @@
 #SBATCH --job-name=heatcuda             # Job name
 #SBATCH --time=00-01:00:00           # Time limit d-h:m:s
 #SBATCH --partition=debug          # Partition to run the job
+##SBATCH --exclude=nvb[2]
 
 executable=./heatCUDA
 txb=16

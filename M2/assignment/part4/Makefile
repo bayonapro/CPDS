@@ -4,7 +4,7 @@ CUDAPATH = $(shell which nvcc | cut -d/ -f-4)
 NVCCFLAGS = -I$(CUDAPATH)/include #--ptxas-options=-v 
 LFLAGS = -L$(CUDAPATH)/lib64 -lcuda -lcudart -lm
 
-REDUCTION ?= 0
+REDUCTION ?= 1
 
 NVCCFLAGS += -DREDUCTION=$(REDUCTION) 
 

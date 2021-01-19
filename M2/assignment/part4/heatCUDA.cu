@@ -36,33 +36,25 @@ int coarsen(float *uold, unsigned oldx, unsigned oldy ,
 	    float *unew, unsigned newx, unsigned newy );
 
 
-__global__ void gpu_Heat (float *h, float *g, int N);
+__global__ void gpu_Heat (float *h, float *g, float* r, int N);
 
-#if REDUCTION
-__global__ void gpu_residual(float *h, float *g, float *r, int N);
-#endif
+/* #if REDUCTION */
+__global__ void gpu_residual (float *h, float *g, float *r, int N);
+/* #endif */
 
-#if REDUCTION == 1
-__global__ void reduce0(float *in, float *out, int N);
-#elif REDUCTION == 2
-#elif REDUCTION == 3
-#elif REDUCTION == 4
-#elif REDUCTION == 5
-#elif REDUCTION == 6
-#elif REDUCTION == 7
-#endif
+__global__ void reduce0 (float *g_in, float *g_out, unsigned int N);
+__global__ void reduce1 (float *g_in, float *g_out, unsigned int N);
 
 #define NB 8
 #define min(a,b) ( ((a) < (b)) ? (a) : (b) )
 
-float cpu_residual (float *u, float *utmp, unsigned sizex, unsigned sizey)
+float cpu_residual (float* residual, unsigned sizex, unsigned sizey)
 {
-    float diff, sum=0.0;
+    float sum=0.0;
   
     for (int i=1; i<sizex-1; i++) 
         for (int j=1; j<sizey-1; j++) {
-            diff = utmp[i*sizey+j] - u[i*sizey + j];
-            sum += diff * diff;
+            sum += residual[i*sizey+j];
 	}
     return sum;
 }
@@ -120,16 +112,17 @@ int main( int argc, char *argv[] ) {
 	return 1;
     }
 
-    // check result file
-    resfilename="heat.ppm";
+// ---------------------------------------- CPU ------------------------------
+    /* // check result file */
+    /* resfilename="heat-cpu.ppm"; */
 
-    if( !(resfile=fopen(resfilename, "w")) ) {
-	fprintf(stderr, 
-		"\nError: Cannot open \"%s\" for writing.\n\n", 
-		resfilename);
-	usage(argv[0]);
-	return 1;
-    }
+    /* if( !(resfile=fopen(resfilename, "w")) ) { */
+	/* fprintf(stderr, */ 
+		/* "\nError: Cannot open \"%s\" for writing.\n\n", */ 
+		/* resfilename); */
+	/* usage(argv[0]); */
+	/* return 1; */
+    /* } */
 
     // check input
     if( !read_input(infile, &param) )
@@ -157,16 +150,16 @@ int main( int argc, char *argv[] ) {
             return 0;
        	    }
 
-    fprintf(stderr, "\nSolving Heat equation on the CPU and the GPU\n");
-    fprintf(stderr, "--------------------------------------------\n");
-    print_params(&param);
+    /* fprintf(stderr, "\nSolving Heat equation on the CPU and the GPU\n"); */
+    /* fprintf(stderr, "--------------------------------------------\n"); */
+    /* print_params(&param); */
 
-    fprintf(stdout, "\nExecution on CPU (sequential)\n-----------------------------\n");
-    if( !initialize(&param) )
-	{
-	    fprintf(stderr, "Error in Solver initialization.\n\n");
-            return 1;
-	}
+    /* fprintf(stdout, "\nExecution on CPU (sequential)\n-----------------------------\n"); */
+    /* if( !initialize(&param) ) */
+	/* { */
+	    /* fprintf(stderr, "Error in Solver initialization.\n\n"); */
+    /*         return 1; */
+	/* } */
 
     // starting time
     float elapsed_time_ms;       	// which is applicable for asynchronous code also
@@ -174,44 +167,64 @@ int main( int argc, char *argv[] ) {
     cudaEventCreate( &start );     // instrument code to measure start time
     cudaEventCreate( &stop );
 
-    cudaEventRecord( start, 0 );
-    cudaEventSynchronize( start );
+    /* cudaEventRecord( start, 0 ); */
+    /* cudaEventSynchronize( start ); */
 
-    iter = 0;
-    float residual;
-    while(1) {
-	residual = cpu_jacobi(param.u, param.uhelp, np, np);
-	float * tmp = param.u;
-	param.u = param.uhelp;
-	param.uhelp = tmp;
+    /* iter = 0; */
+    float residual = 0.0;
+    /* while(1) { */
+	/* residual = cpu_jacobi(param.u, param.uhelp, np, np); */
+	/* float * tmp = param.u; */
+	/* param.u = param.uhelp; */
+	/* param.uhelp = tmp; */
 
-        iter++;
+    /*     iter++; */
 
-        // solution good enough ?
-        if (residual < 0.00005) break;
+    /*     // solution good enough ? */
+    /*     if (residual < 0.00005) break; */
 
-        // max. iteration reached ? (no limit with maxiter=0)
-        if (iter>=param.maxiter) break;
-    }
+    /*     // max. iteration reached ? (no limit with maxiter=0) */
+    /*     if (iter>=param.maxiter) break; */
+    /* } */
 
-    cudaEventRecord( stop, 0 );     // instrument code to measue end time
-    cudaEventSynchronize( stop );
-    cudaEventElapsedTime( &elapsed_time_ms, start, stop );
+    /* cudaEventRecord( stop, 0 );     // instrument code to measue end time */
+    /* cudaEventSynchronize( stop ); */
+    /* cudaEventElapsedTime( &elapsed_time_ms, start, stop ); */
 
-    // Flop count after iter iterations
-    float flop = iter * 11.0 * param.resolution * param.resolution;
+    /* // Flop count after iter iterations */
+    /* float flop = iter * 11.0 * param.resolution * param.resolution; */
 
-    fprintf(stdout, "Time on CPU in ms.= %f ", elapsed_time_ms);
-    fprintf(stdout, "(%3.3f GFlop => %6.2f MFlop/s)\n", 
-	    flop/1000000000.0,
-	    flop/elapsed_time_ms/1000);
-    fprintf(stdout, "Convergence to residual=%f: %d iterations\n", residual, iter);
+    /* fprintf(stdout, "Time on CPU in ms.= %f ", elapsed_time_ms); */
+    /* fprintf(stdout, "(%3.3f GFlop => %6.2f MFlop/s)\n", */ 
+	    /* flop/1000000000.0, */
+	    /* flop/elapsed_time_ms/1000); */
+    /* fprintf(stdout, "Convergence to residual=%f: %d iterations\n", residual, iter); */
 
-    finalize( &param );
+    /* // for plot... */
+    /* coarsen( param.u, np, np, */
+	     /* param.uvis, param.visres+2, param.visres+2 ); */
+  
+    /* write_image( resfile, param.uvis, */  
+		 /* param.visres+2, */ 
+		 /* param.visres+2 ); */
+
+    /* finalize( &param ); */
+
+//---------------------------------------- GPU -------------------------------
 
     fprintf(stdout, "\nExecution on GPU\n----------------\n");
     fprintf(stderr, "Number of threads per block in each dimension = %d\n", Block_Dim);
     fprintf(stderr, "Number of blocks per grid in each dimension   = %d\n", Grid_Dim);
+
+    resfilename="heat-gpu.ppm";
+
+    if( !(resfile=fopen(resfilename, "w")) ) {
+	fprintf(stderr, 
+		"\nError: Cannot open \"%s\" for writing.\n\n", 
+		resfilename);
+	usage(argv[0]);
+	return 1;
+    }
 
     if( !initialize(&param) )
 	{
@@ -226,69 +239,96 @@ int main( int argc, char *argv[] ) {
     cudaEventRecord( start, 0 );
     cudaEventSynchronize( start );
 
-    float *dev_u, *dev_uhelp;
+    float *dev_u, *dev_uhelp, *dev_residual;
 
     // TODO: Allocation on GPU for matrices u and uhelp
     size_t size = np * np * sizeof(float);
     cudaMalloc(&dev_u, size);
     cudaMalloc(&dev_uhelp, size);
+    cudaMalloc(&dev_residual, size);
 
     // TODO: Copy initial values in u and uhelp from host to GPU
     cudaMemcpy(dev_u, param.u, size, cudaMemcpyHostToDevice);
     cudaMemcpy(dev_uhelp, param.uhelp, size, cudaMemcpyHostToDevice);
 
 #if REDUCTION
-    float *dev_r;
-    cudaMalloc(&dev_r, size);
 #endif
+
+    // debug
+    float * residual_matrix = (float*) malloc(sizeof(float) * np * np);
 
     iter = 0;
     while(1) {
-        gpu_Heat<<<Grid,Block>>>(dev_u, dev_uhelp, np);
-        cudaThreadSynchronize();                        // wait for all threads to complete
+        gpu_Heat<<<Grid,Block>>>(dev_u, dev_uhelp, dev_residual, np);
+        cudaDeviceSynchronize();
+        /* cudaThreadSynchronize();                        // wait for all threads to complete */
 
 #if REDUCTION == 0
+        /* printf("Reduction cpu 0\n"); */
         cudaMemcpy(param.u, dev_u, size, cudaMemcpyDeviceToHost);
         cudaMemcpy(param.uhelp, dev_uhelp, size, cudaMemcpyDeviceToHost);
+        cudaMemcpy(residual_matrix, dev_residual, size, cudaMemcpyDeviceToHost);
 
-        residual = cpu_residual(param.u, param.uhelp, np, np);
-#elif REDUCTION == 1
-        gpu_residual<<<Grid,Block>>>(dev_u, dev_uhelp, dev_r, np);
-        float residual = 0.0;
-        int n = np * np;
-        int blocksPerGrid = std::ceil((1. * n) / Block.x);
+        /* printf("reduction = 0\n"); */
+        /* residual = cpu_residual(param.u, param.uhelp, np, np); */
+        residual = cpu_residual(residual_matrix, np, np);
+        printf("\nresidual: %f\n", residual);
 
-        float *g_out1, *tmp;
-        cudaMalloc(&g_out1, sizeof(float) * blocksPerGrid);
-        cudaMalloc(&tmp, sizeof(float) * blocksPerGrid);
+/* #elif REDUCTION == 1 */
+#else
+            printf("\n");
+        printf("Reduction gpu 0\n");
+        /* gpu_residual <<< Grid, Block >>> (dev_u, dev_uhelp, dev_residual, np); */
+        /* cudaDeviceSynchronize(); */
+        /*     // debug */
+        /*     cudaMemcpy(debug, dev_residual,sizeof(float) * np * np, cudaMemcpyDeviceToHost); */
+            /* for (int i = 0; i < np*np; i++) printf("%f ", debug[i]); */
+            /* printf("\n"); */
+            /* printf("dev residual [1][1] %f\n", debug[1*np + 1]); */
 
-        float *from = dev_r;
-        float *to = g_out1;
 
-        do {
-            blocksPerGrid = std::ceil((1. * n) / Block.x);
-            dim3 Grid_reduce(blocksPerGrid, blocksPerGrid);
-            reduce0<Block><<<Grid_reduce, Block>>>(from, to);
-            tmp = from;
-            from = to;
-            to = tmp;
-            n = blocksPerGrid;
-        } while (n > Block.x);
 
-        if (n > 1) reduce0<Block><<<1,Block>>>(tmp, tmp);
+        /* float residual = 0.0; */
+        unsigned int n = np * np;
+        
+        Block_Dim = 64;
+        dim3 block_reduce(Block_Dim, 1, 1);
+        size_t blocksPerGrid = std::ceil((1. * n) / Block_Dim);
 
-        cudaDeviceSynchronize();
-
-        cudaMemcpy(&residual, tmp, sizeof(float), cudaMemcpyDeviceToHost);
-
-        cudaFree(g_out1);
-        cudafree(tmp);
+        while (n > Block_Dim) {
+            blocksPerGrid = std::ceil((1. * n) / Block_Dim);
+            dim3 Grid_reduce(blocksPerGrid, 1, 1);
+#if REDUCTION == 1
+            reduce0 <<< Grid_reduce, block_reduce, Block_Dim >>> (dev_residual, dev_residual, n);
 #elif REDUCTION == 2
+            reduce1 <<< Grid_reduce, block_reduce, Block_Dim >>> (dev_residual, dev_residual, n);
 #elif REDUCTION == 3
 #elif REDUCTION == 4
 #elif REDUCTION == 5
 #elif REDUCTION == 6
 #else
+#endif
+
+            cudaDeviceSynchronize();
+        /*     // debug */
+        /*     cudaMemcpy(debug, dev_residual,sizeof(float) * blocksPerGrid, cudaMemcpyDeviceToHost); */
+        /*     for (int i = 0; i < 5; i++) printf("%f ", debug[i]); */
+        /*     printf("\n"); */
+            printf("blockspergrid %d and n %d\n",blocksPerGrid, n);
+            n = blocksPerGrid;
+        }
+
+        if (n > 1) reduce0<<< 1, Block_Dim, Block_Dim >>>(dev_residual, dev_residual, n);
+
+
+        cudaDeviceSynchronize();
+
+        cudaMemcpy(&residual, dev_residual, sizeof(float), cudaMemcpyDeviceToHost);
+        /* cudaMemcpy(&residual, to, sizeof(float), cudaMemcpyDeviceToHost); */
+        printf("\nresidual: %f \n", residual);
+
+        /* cudaFree(g_out1); */
+        /* cudaFree(dev_tmp); */
 #endif
 
 	float * tmp = dev_u;
@@ -311,6 +351,7 @@ int main( int argc, char *argv[] ) {
     // TODO: free memory used in GPU
     cudaFree(dev_u);
     cudaFree(dev_uhelp);
+    cudaFree(dev_residual);
 
 #if REDUCTION
 #endif
@@ -318,6 +359,8 @@ int main( int argc, char *argv[] ) {
     cudaEventRecord( stop, 0 );     // instrument code to measue end time
     cudaEventSynchronize( stop );
     cudaEventElapsedTime( &elapsed_time_ms, start, stop );
+
+    float flop = iter * 11.0 * param.resolution * param.resolution;
 
     fprintf(stdout, "\nTime on GPU in ms. = %f ", elapsed_time_ms);
     fprintf(stdout, "(%3.3f GFlop => %6.2f MFlop/s)\n", 

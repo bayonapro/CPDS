@@ -15,4 +15,4 @@ heatmpi: heat-mpi.c solver-mpi.c misc.o
 	$(MPICC) $(CFLAGS) -o $@ $+ -lm -g
 
 clean:
-	rm -fr $(ALL) *.o *.mpi *~ *.ppm *.ps *.txt *.err *.out *.prv *.pcf *.row TRACE.mpits set-0 *.sym
+	rm -fr $(ALL) *.o *.mpi *~  *.ps *.txt *.err *.out *.prv *.pcf *.row TRACE.mpits set-0 *.sym
